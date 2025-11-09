@@ -36,7 +36,8 @@
                     <DataGridTextColumn Header="Naam" Binding="{Binding Naam}" Width="*"/>
                     <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="150"/>
                     <DataGridTextColumn Header="Voorraad" Binding="{Binding Voorraad}" Width="100"/>
-                    <DataGridTextColumn Header="Per 100m2" Binding="{Binding HoeveelheidPer100M2Display}" Width="100"/>
+                    <!-- Deze display-kolom is alleen-lezen om crashes bij dubbelklikken te voorkomen -->
+                    <DataGridTextColumn Header="Per 100m2" Binding="{Binding HoeveelheidPer100M2Display}" Width="100" IsReadOnly="True"/>
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>
