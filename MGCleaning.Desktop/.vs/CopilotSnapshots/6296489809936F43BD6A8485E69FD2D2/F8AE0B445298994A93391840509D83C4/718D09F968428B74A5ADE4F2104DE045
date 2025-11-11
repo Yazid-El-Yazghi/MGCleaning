@@ -1,0 +1,120 @@
+﻿using System.Windows;
+using MGCleaning.Desktop.Services;
+using MGCleaning.Desktop.ViewModels;
+using MGCleaning.Desktop.Views;
+
+namespace MGCleaning.Desktop
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        private readonly MainViewModel _viewModel;
+        private readonly GebouwService _gebouwService;
+        private readonly ProductService _productService;
+        private readonly ArbeiderService _arbeiderService;
+        private readonly BestellingService _bestellingService;
+        private readonly AuthService _authService;
+
+        public MainWindow(MainViewModel viewModel, GebouwService gebouwService, 
+            ProductService productService, ArbeiderService arbeiderService,
+            BestellingService bestellingService, AuthService authService)
+        {
+            InitializeComponent();
+            _viewModel = viewModel;
+            _gebouwService = gebouwService;
+            _productService = productService;
+            _arbeiderService = arbeiderService;
+            _bestellingService = bestellingService;
+            _authService = authService;
+
+            DataContext = _viewModel;
+        }
+
+        public async Task InitializeAfterLoginAsync()
+        {
+            await ConfigureUIBasedOnRole();
+            await LaadDashboardDataAsync();
+        }
+
+        private async Task ConfigureUIBasedOnRole()
+        {
+            if (_authService.HuidigeGebruiker == null)
+                return;
+
+            var rollen = await _authService.GetRollenAsync(_authService.HuidigeGebruiker);
+            var isAdmin = rollen.Contains("Admin");
+            var isManager = rollen.Contains("Manager");
+            var isSchoonmaker = rollen.Contains("Schoonmaker");
+
+            // Zichtbaarheid van knoppen configureren
+            GebouwenButton.Visibility = (isAdmin || isManager) ? Visibility.Visible : Visibility.Collapsed;
+            ProductenButton.Visibility = (isAdmin || isManager) ? Visibility.Visible : Visibility.Collapsed;
+            PersoneelButton.Visibility = (isAdmin || isManager) ? Visibility.Visible : Visibility.Collapsed;
+            
+            // Bestellingen voor iedereen zichtbaar
+            BestellingenButton.Visibility = Visibility.Visible;
+
+            // Personeel overzicht alleen voor managers en admins
+            PersoneelGroupBox.Visibility = (isAdmin || isManager) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private async Task LaadDashboardDataAsync()
+        {
+            try
+            {
+                await _viewModel.LaadDataAsync();
+                GebouwenDataGrid.ItemsSource = _viewModel.Gebouwen;
+                ProductenDataGrid.ItemsSource = _viewModel.Producten;
+                PersoneelDataGrid.ItemsSource = _viewModel.Arbeiders;
+                UserInfoTextBlock.Text = _viewModel.GebruikersNaam;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Fout bij laden data: {ex.Message}", "Fout", 
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void GebouwenButton_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new GebouwenWindow(_gebouwService, _authService);
+            window.ShowDialog();
+            _ = LaadDashboardDataAsync();
+        }
+
+        private void ProductenButton_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new ProductenWindow(_productService, _authService);
+            window.ShowDialog();
+            _ = LaadDashboardDataAsync();
+        }
+
+        private void PersoneelButton_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new PersoneelWindow(_arbeiderService, _authService);
+            window.ShowDialog();
+            _ = LaadDashboardDataAsync();
+        }
+
+        private void BestellingenButton_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new BestellingenWindow(_bestellingService, _gebouwService, _productService, _authService);
+            window.ShowDialog();
+            _ = LaadDashboardDataAsync();
+        }
+
+        private void AccountButton_Click(object sender, RoutedEventArgs e)
+        {
+            var app = (App)Application.Current;
+            var userManager = app.Services.GetService(typeof(Microsoft.AspNetCore.Identity.UserManager<MGCleaning.Models.ApplicationUser>)) 
+                as Microsoft.AspNetCore.Identity.UserManager<MGCleaning.Models.ApplicationUser>;
+            
+            var window = new AccountWindow(_authService, userManager!);
+            window.ShowDialog();
+            _viewModel.UpdateGebruikersInfo();
+            UserInfoTextBlock.Text = _viewModel.GebruikersNaam;
+        }
+    }
+}

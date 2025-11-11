@@ -1,0 +1,124 @@
+﻿using System.Windows;
+using System.Windows.Controls;
+using MGCleaning.Desktop.Services;
+using MGCleaning.Models;
+
+namespace MGCleaning.Desktop.Views;
+
+public partial class CalculatorWindow : Window
+{
+    private readonly GebouwService _gebouwService;
+    private readonly ProductService _productService;
+
+    public CalculatorWindow(GebouwService gebouwService, ProductService productService)
+    {
+        InitializeComponent();
+        _gebouwService = gebouwService;
+        _productService = productService;
+        Loaded += CalculatorWindow_Loaded;
+    }
+
+    private async void CalculatorWindow_Loaded(object sender, RoutedEventArgs e)
+    {
+        await LaadCalculatorDataAsync();
+    }
+
+    private async Task LaadCalculatorDataAsync()
+    {
+        try
+        {
+            var gebouwen = await _gebouwService.GetAlleGebouwenAsync();
+            var producten = await _productService.GetAlleProductenAsync();
+
+            if (!gebouwen.Any() || !producten.Any())
+            {
+                MessageBox.Show("Geen gebouwen of producten gevonden.", "Informatie", 
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            // Maak DataGrid kolommen dynamisch
+            CalculatorDataGrid.Columns.Clear();
+
+            // Eerste kolom: Gebouw naam
+            var gebouwColumn = new DataGridTextColumn
+            {
+                Header = "Gebouw",
+                Binding = new System.Windows.Data.Binding("GebouwNaam"),
+                Width = new DataGridLength(200),
+                IsReadOnly = true
+            };
+            CalculatorDataGrid.Columns.Add(gebouwColumn);
+
+            // Oppervlakte kolom
+            var oppervlakteColumn = new DataGridTextColumn
+            {
+                Header = "Oppervlakte (m2)",
+                Binding = new System.Windows.Data.Binding("Oppervlakte"),
+                Width = new DataGridLength(120),
+                IsReadOnly = true
+            };
+            CalculatorDataGrid.Columns.Add(oppervlakteColumn);
+
+            // Voor elk product een kolom
+            foreach (var product in producten)
+            {
+                var productColumn = new DataGridTextColumn
+                {
+                    Header = $"{product.Naam}\n(1 product per {product.HoeveelheidPer100M2Display:N0}m2)",
+                    Binding = new System.Windows.Data.Binding($"Product_{product.Id}"),
+                    Width = new DataGridLength(150),
+                    IsReadOnly = true
+                };
+                CalculatorDataGrid.Columns.Add(productColumn);
+            }
+
+            // Bereken data voor elk gebouw
+            var calculatorData = new List<dynamic>();
+
+            foreach (var gebouw in gebouwen)
+            {
+                var row = new System.Dynamic.ExpandoObject() as IDictionary<string, object>;
+                row["GebouwNaam"] = gebouw.Naam;
+                row["Oppervlakte"] = $"{gebouw.OppervlakteM2:N0}";
+
+                foreach (var product in producten)
+                {
+                    // Bereken aantal benodigde producten
+                    // Formule: Oppervlakte / HoeveelheidPer100M2Display (afgerond naar boven)
+                    int aantalProducten = 0;
+
+                    if (product.HoeveelheidPer100M2Display > 0)
+                    {
+                        // Bereken hoeveel producten nodig zijn
+                        decimal berekening = gebouw.OppervlakteM2 / product.HoeveelheidPer100M2Display;
+                        
+                        // Rond naar boven (ceiling)
+                        aantalProducten = (int)Math.Ceiling(berekening);
+                    }
+
+                    row[$"Product_{product.Id}"] = $"{aantalProducten}";
+                }
+
+                calculatorData.Add(row);
+            }
+
+            CalculatorDataGrid.ItemsSource = calculatorData;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Fout bij laden calculator data: {ex.Message}", "Fout", 
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private async void RefreshButton_Click(object sender, RoutedEventArgs e)
+    {
+        await LaadCalculatorDataAsync();
+    }
+
+    private void TerugButton_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+}

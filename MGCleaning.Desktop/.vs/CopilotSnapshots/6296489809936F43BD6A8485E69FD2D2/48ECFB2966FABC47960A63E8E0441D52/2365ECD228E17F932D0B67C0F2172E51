@@ -1,0 +1,15 @@
+﻿namespace MGCleaning.Models;
+
+/// <summary>
+/// Many-to-many relatie tussen Gebouw en Arbeider
+/// </summary>
+public class GebouwArbeider
+{
+    public int GebouwId { get; set; }
+    public Gebouw Gebouw { get; set; } = null!;
+
+    public int ArbeiderId { get; set; }
+    public Arbeider Arbeider { get; set; } = null!;
+    
+    public bool IsDeleted { get; set; }
+}

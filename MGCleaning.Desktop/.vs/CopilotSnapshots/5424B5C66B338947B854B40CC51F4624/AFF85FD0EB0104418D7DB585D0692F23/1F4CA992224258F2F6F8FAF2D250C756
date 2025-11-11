@@ -1,0 +1,50 @@
+﻿<Window x:Class="MGCleaning.Desktop.Views.ProductenWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:MGCleaning.Desktop.Controls"
+        Title="Producten Beheer" Height="600" Width="900"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <controls:HeaderControl Grid.Row="0" Margin="10"/>
+
+        <!-- Content -->
+        <DockPanel Grid.Row="1" Margin="10">
+            <!-- Buttons (alleen voor Admin en Manager) -->
+            <StackPanel x:Name="ButtonPanel" DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
+                <Button x:Name="ToevoegenButton" Content="Nieuw Product" Width="120" Height="35" 
+                        Margin="5" Background="#0066CC" Foreground="White" Click="ToevoegenButton_Click"/>
+                <Button x:Name="WijzigenButton" Content="Wijzigen" Width="120" Height="35" 
+                        Margin="5" Background="#FF9900" Foreground="White" Click="WijzigenButton_Click"/>
+                <Button x:Name="VerwijderenButton" Content="Verwijderen" Width="120" Height="35" 
+                        Margin="5" Background="#CC0000" Foreground="White" Click="VerwijderenButton_Click"/>
+            </StackPanel>
+
+            <!-- Data Grid -->
+            <DataGrid x:Name="ProductenDataGrid" 
+                      AutoGenerateColumns="False" 
+                      SelectionMode="Single"
+                      CanUserAddRows="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Naam" Binding="{Binding Naam}" Width="*"/>
+                    <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="150"/>
+                    <DataGridTextColumn Header="Voorraad" Binding="{Binding Voorraad}" Width="100"/>
+                    <DataGridTextColumn Header="Per 100m2" Binding="{Binding HoeveelheidPer100M2Display}" Width="100"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+
+        <!-- Bottom Buttons -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+            <Button Content="Terug naar Start" Width="150" Height="35" 
+                    Background="#666666" Foreground="White" Click="TerugButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

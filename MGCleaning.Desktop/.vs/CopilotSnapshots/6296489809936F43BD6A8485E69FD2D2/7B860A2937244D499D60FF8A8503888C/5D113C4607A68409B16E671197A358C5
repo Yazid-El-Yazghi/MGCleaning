@@ -1,0 +1,101 @@
+﻿using System.Windows;
+using MGCleaning.Desktop.Services;
+using MGCleaning.Models;
+
+namespace MGCleaning.Desktop.Views;
+
+public partial class BestellingenWindow : Window
+{
+    private readonly BestellingService _bestellingService;
+    private readonly GebouwService _gebouwService;
+    private readonly ProductService _productService;
+
+    public BestellingenWindow(BestellingService bestellingService, GebouwService gebouwService, ProductService productService)
+    {
+        InitializeComponent();
+        _bestellingService = bestellingService;
+        _gebouwService = gebouwService;
+        _productService = productService;
+        Loaded += BestellingenWindow_Loaded;
+    }
+
+    private async void BestellingenWindow_Loaded(object sender, RoutedEventArgs e)
+    {
+        await LaadBestellingenAsync();
+    }
+
+    private async Task LaadBestellingenAsync()
+    {
+        try
+        {
+            var bestellingen = await _bestellingService.GetAlleBestellingenAsync();
+            BestellingenDataGrid.ItemsSource = bestellingen;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Fout bij laden bestellingen: {ex.Message}", "Fout", 
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void ToevoegenButton_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new BestellingEditDialog(_bestellingService, _gebouwService, _productService);
+        if (dialog.ShowDialog() == true)
+        {
+            _ = LaadBestellingenAsync();
+        }
+    }
+
+    private void WijzigenButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (BestellingenDataGrid.SelectedItem is Bestelling geselecteerd)
+        {
+            var dialog = new BestellingEditDialog(_bestellingService, _gebouwService, _productService, geselecteerd);
+            if (dialog.ShowDialog() == true)
+            {
+                _ = LaadBestellingenAsync();
+            }
+        }
+        else
+        {
+            MessageBox.Show("Selecteer eerst een bestelling.", "Waarschuwing", 
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    private async void VerwijderenButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (BestellingenDataGrid.SelectedItem is Bestelling geselecteerd)
+        {
+            var result = MessageBox.Show($"Weet u zeker dat u deze bestelling wilt verwijderen?", 
+                "Bevestiging", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    await _bestellingService.VerwijderenAsync(geselecteerd.Id);
+                    await LaadBestellingenAsync();
+                    MessageBox.Show("Bestelling succesvol verwijderd.", "Succes", 
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Fout bij verwijderen: {ex.Message}", "Fout", 
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+        else
+        {
+            MessageBox.Show("Selecteer eerst een bestelling.", "Waarschuwing", 
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    private void TerugButton_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+}

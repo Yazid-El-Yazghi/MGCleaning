@@ -1,0 +1,46 @@
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
+namespace MGCleaning.Models;
+
+/// <summary>
+/// Database context voor MG Cleaning met Identity support en soft delete filter
+/// </summary>
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+{
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+    {
+    }
+
+    public DbSet<Gebouw> Gebouwen { get; set; }
+    public DbSet<Product> Producten { get; set; }
+    public DbSet<Arbeider> Arbeiders { get; set; }
+    public DbSet<GebouwArbeider> GebouwArbeiders { get; set; }
+    public DbSet<Bestelling> Bestellingen { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        // Configureer many-to-many relatie
+        modelBuilder.Entity<GebouwArbeider>()
+            .HasKey(ga => new { ga.GebouwId, ga.ArbeiderId });
+
+        modelBuilder.Entity<GebouwArbeider>()
+            .HasOne(ga => ga.Gebouw)
+            .WithMany(g => g.GebouwArbeiders)
+            .HasForeignKey(ga => ga.GebouwId);
+
+        modelBuilder.Entity<GebouwArbeider>()
+            .HasOne(ga => ga.Arbeider)
+            .WithMany(a => a.GebouwArbeiders)
+            .HasForeignKey(ga => ga.ArbeiderId);
+
+        // Soft delete filters
+        modelBuilder.Entity<Gebouw>().HasQueryFilter(g => !g.IsDeleted);
+        modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted);
+        modelBuilder.Entity<Arbeider>().HasQueryFilter(a => !a.IsDeleted);
+        modelBuilder.Entity<Bestelling>().HasQueryFilter(b => !b.IsDeleted);
+        modelBuilder.Entity<GebouwArbeider>().HasQueryFilter(ga => !ga.IsDeleted);
+    }
+}

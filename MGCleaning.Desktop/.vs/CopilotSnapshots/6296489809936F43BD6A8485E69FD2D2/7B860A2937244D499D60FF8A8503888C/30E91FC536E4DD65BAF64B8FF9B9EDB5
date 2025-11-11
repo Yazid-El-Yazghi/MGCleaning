@@ -1,0 +1,152 @@
+﻿using System.Windows;
+using MGCleaning.Desktop.Services;
+using MGCleaning.Models;
+
+namespace MGCleaning.Desktop.Views;
+
+public partial class BestellingEditDialog : Window
+{
+    private readonly BestellingService _bestellingService;
+    private readonly GebouwService _gebouwService;
+    private readonly ProductService _productService;
+    private readonly AuthService _authService;
+    private readonly Bestelling? _bestelling;
+
+    public BestellingEditDialog(BestellingService bestellingService, GebouwService gebouwService, 
+        ProductService productService, AuthService authService, Bestelling? bestelling = null)
+    {
+        InitializeComponent();
+        _bestellingService = bestellingService;
+        _gebouwService = gebouwService;
+        _productService = productService;
+        _authService = authService;
+        _bestelling = bestelling;
+
+        Loaded += BestellingEditDialog_Loaded;
+    }
+
+    private async void BestellingEditDialog_Loaded(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var gebouwen = await _gebouwService.GetAlleGebouwenAsync();
+            GebouwComboBox.ItemsSource = gebouwen;
+
+            var producten = await _productService.GetAlleProductenAsync();
+            // Voeg een "Geen product" optie toe
+            var productLijst = new List<Product> { new Product { Id = 0, Naam = "(Geen product)" } };
+            productLijst.AddRange(producten);
+            ProductComboBox.ItemsSource = productLijst;
+            ProductComboBox.SelectedIndex = 0; // Selecteer "Geen product" als default
+
+            if (_bestelling != null)
+            {
+                GebouwComboBox.SelectedItem = gebouwen.FirstOrDefault(g => g.Id == _bestelling.GebouwId);
+                
+                if (_bestelling.ProductId > 0)
+                {
+                    ProductComboBox.SelectedItem = productLijst.FirstOrDefault(p => p.Id == _bestelling.ProductId);
+                }
+                
+                FrequentieTextBox.Text = _bestelling.FrequentiePerMaand.ToString();
+                DatumPicker.SelectedDate = _bestelling.Datum;
+                BerichtTextBox.Text = _bestelling.Bericht;
+                Title = "Bestelling Wijzigen";
+            }
+            else
+            {
+                DatumPicker.SelectedDate = DateTime.Now;
+                FrequentieTextBox.Text = "1";
+                Title = "Nieuwe Bestelling";
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Fout bij laden: {ex.Message}", "Fout", 
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private async void OpslaanButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (GebouwComboBox.SelectedItem is not Gebouw gebouw)
+            {
+                MessageBox.Show("Selecteer een gebouw.", "Validatie", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Product is optioneel
+            int productId = 0;
+            if (ProductComboBox.SelectedItem is Product product && product.Id > 0)
+            {
+                productId = product.Id;
+            }
+
+            // Als geen product, moet er een bericht zijn
+            if (productId == 0 && string.IsNullOrWhiteSpace(BerichtTextBox.Text))
+            {
+                MessageBox.Show("Als u geen product selecteert, moet u een bericht invullen.", "Validatie", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!int.TryParse(FrequentieTextBox.Text, out var frequentie) || frequentie <= 0)
+            {
+                MessageBox.Show("Voer een geldige frequentie in.", "Validatie", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!DatumPicker.SelectedDate.HasValue)
+            {
+                MessageBox.Show("Selecteer een datum.", "Validatie", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (_bestelling != null)
+            {
+                // Wijzigen
+                _bestelling.GebouwId = gebouw.Id;
+                _bestelling.ProductId = productId > 0 ? productId : _bestelling.ProductId; // Behoud oude product als geen nieuwe geselecteerd
+                _bestelling.FrequentiePerMaand = frequentie;
+                _bestelling.Datum = DatumPicker.SelectedDate.Value;
+                _bestelling.Bericht = BerichtTextBox.Text;
+                await _bestellingService.BijwerkenAsync(_bestelling);
+            }
+            else
+            {
+                // Toevoegen - maar alleen als er een product is OF een bericht
+                if (productId > 0 || !string.IsNullOrWhiteSpace(BerichtTextBox.Text))
+                {
+                    var nieuweBestelling = new Bestelling
+                    {
+                        GebouwId = gebouw.Id,
+                        ProductId = productId > 0 ? productId : 1, // Default product ID als geen geselecteerd
+                        FrequentiePerMaand = frequentie,
+                        Datum = DatumPicker.SelectedDate.Value,
+                        Bericht = BerichtTextBox.Text
+                    };
+                    await _bestellingService.ToevoegenAsync(nieuweBestelling);
+                }
+            }
+
+            DialogResult = true;
+            Close();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Fout bij opslaan: {ex.Message}", "Fout", 
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void AnnulerenButton_Click(object sender, RoutedEventArgs e)
+    {
+        DialogResult = false;
+        Close();
+    }
+}

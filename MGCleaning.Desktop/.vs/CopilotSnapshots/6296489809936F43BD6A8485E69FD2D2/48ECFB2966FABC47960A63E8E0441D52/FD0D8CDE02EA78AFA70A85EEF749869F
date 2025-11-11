@@ -1,0 +1,198 @@
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
+namespace MGCleaning.Models;
+
+/// <summary>
+/// Database seeder voor initiële data en dummy data
+/// </summary>
+public static class DbSeeder
+{
+    public static async Task SeedAsync(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+    {
+        // Zorg ervoor dat de database bestaat
+        await context.Database.EnsureCreatedAsync();
+
+        // Seed rollen
+        await SeedRolesAsync(roleManager);
+
+        // Seed gebruikers
+        await SeedUsersAsync(userManager);
+
+        // Seed gebouwen
+        await SeedGebouwenAsync(context);
+
+        // Seed producten
+        await SeedProductenAsync(context);
+
+        // Seed arbeiders
+        await SeedArbeidersAsync(context);
+
+        // Seed koppelingen
+        await SeedGebouwArbeidersAsync(context);
+
+        // Seed bestellingen
+        await SeedBestellingenAsync(context);
+
+        await context.SaveChangesAsync();
+    }
+
+    private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
+    {
+        string[] roles = { "Admin", "Manager", "Schoonmaker" };
+
+        foreach (var role in roles)
+        {
+            if (!await roleManager.RoleExistsAsync(role))
+            {
+                await roleManager.CreateAsync(new IdentityRole(role));
+            }
+        }
+    }
+
+    private static async Task SeedUsersAsync(UserManager<ApplicationUser> userManager)
+    {
+        // Admin gebruiker met standaard credentials
+        if (await userManager.FindByNameAsync("admin") == null)
+        {
+            var admin = new ApplicationUser
+            {
+                UserName = "admin",
+                Email = "admin@mgcleaning.nl",
+                Telefoonnummer = "0612345678",
+                Adres = "Hoofdstraat 1, Amsterdam",
+                EmailConfirmed = true
+            };
+            await userManager.CreateAsync(admin, "admin123");
+            await userManager.AddToRoleAsync(admin, "Admin");
+        }
+
+        // Manager gebruiker
+        if (await userManager.FindByNameAsync("manager") == null)
+        {
+            var manager = new ApplicationUser
+            {
+                UserName = "manager",
+                Email = "manager@mgcleaning.nl",
+                Telefoonnummer = "0687654321",
+                Adres = "Kerkstraat 10, Rotterdam",
+                EmailConfirmed = true
+            };
+            await userManager.CreateAsync(manager, "manager123");
+            await userManager.AddToRoleAsync(manager, "Manager");
+        }
+
+        // Schoonmaker gebruiker
+        if (await userManager.FindByNameAsync("schoonmaker") == null)
+        {
+            var schoonmaker = new ApplicationUser
+            {
+                UserName = "schoonmaker",
+                Email = "schoonmaker@mgcleaning.nl",
+                Telefoonnummer = "0698765432",
+                Adres = "Dorpsweg 5, Utrecht",
+                EmailConfirmed = true
+            };
+            await userManager.CreateAsync(schoonmaker, "schoonmaker123");
+            await userManager.AddToRoleAsync(schoonmaker, "Schoonmaker");
+        }
+    }
+
+    private static async Task SeedGebouwenAsync(ApplicationDbContext context)
+    {
+        if (!await context.Gebouwen.AnyAsync())
+        {
+            var gebouwen = new List<Gebouw>
+            {
+                new Gebouw { Naam = "Kantoorgebouw Centrum", Adres = "Hoofdweg 100, Amsterdam", OppervlakteM2 = 2500, AantalToiletten = 8 },
+                new Gebouw { Naam = "Winkelcentrum Noord", Adres = "Winkelstraat 50, Rotterdam", OppervlakteM2 = 5000, AantalToiletten = 15 },
+                new Gebouw { Naam = "School De Horizon", Adres = "Schoolweg 20, Utrecht", OppervlakteM2 = 3000, AantalToiletten = 12 },
+                new Gebouw { Naam = "Sportcomplex Zuid", Adres = "Sportlaan 5, Den Haag", OppervlakteM2 = 4000, AantalToiletten = 20 },
+                new Gebouw { Naam = "Ziekenhuis West", Adres = "Ziekenhuisweg 1, Eindhoven", OppervlakteM2 = 8000, AantalToiletten = 30 }
+            };
+            await context.Gebouwen.AddRangeAsync(gebouwen);
+        }
+    }
+
+    private static async Task SeedProductenAsync(ApplicationDbContext context)
+    {
+        if (!await context.Producten.AnyAsync())
+        {
+            var producten = new List<Product>
+            {
+                new Product { Naam = "Vloer Cleaner Pro", Type = "Vloerreiniger", HoeveelheidPerM2 = 0.01m, HoeveelheidPerToilet = 0, Voorraad = 500 },
+                new Product { Naam = "Toilet Fresh Max", Type = "Toiletproduct", HoeveelheidPerM2 = 0, HoeveelheidPerToilet = 0.25m, Voorraad = 300 },
+                new Product { Naam = "Glas Shine", Type = "Glasreiniger", HoeveelheidPerM2 = 0.005m, HoeveelheidPerToilet = 0, Voorraad = 200 },
+                new Product { Naam = "Toilet Hygiene Plus", Type = "Toiletproduct", HoeveelheidPerM2 = 0, HoeveelheidPerToilet = 0.25m, Voorraad = 250 },
+                new Product { Naam = "Multi Surface Cleaner", Type = "Allesreiniger", HoeveelheidPerM2 = 0.008m, HoeveelheidPerToilet = 0.1m, Voorraad = 400 }
+            };
+            await context.Producten.AddRangeAsync(producten);
+        }
+    }
+
+    private static async Task SeedArbeidersAsync(ApplicationDbContext context)
+    {
+        if (!await context.Arbeiders.AnyAsync())
+        {
+            var arbeiders = new List<Arbeider>
+            {
+                new Arbeider { Naam = "Jan de Vries", IsVerantwoordelijke = true, Telefoonnummer = "0612341111", Adres = "Tuinstraat 5, Amsterdam" },
+                new Arbeider { Naam = "Maria Jansen", IsVerantwoordelijke = false, Telefoonnummer = "0612342222", Adres = "Parkweg 10, Rotterdam" },
+                new Arbeider { Naam = "Piet Bakker", IsVerantwoordelijke = false, Telefoonnummer = "0612343333", Adres = "Bosstraat 15, Utrecht" },
+                new Arbeider { Naam = "Sophie van Dijk", IsVerantwoordelijke = true, Telefoonnummer = "0612344444", Adres = "Laan 20, Den Haag" },
+                new Arbeider { Naam = "Ahmed Hassan", IsVerantwoordelijke = false, Telefoonnummer = "0612345555", Adres = "Singel 30, Eindhoven" }
+            };
+            await context.Arbeiders.AddRangeAsync(arbeiders);
+        }
+    }
+
+    private static async Task SeedGebouwArbeidersAsync(ApplicationDbContext context)
+    {
+        if (!await context.GebouwArbeiders.AnyAsync())
+        {
+            // Wacht tot gebouwen en arbeiders zijn opgeslagen
+            await context.SaveChangesAsync();
+
+            var gebouwen = await context.Gebouwen.ToListAsync();
+            var arbeiders = await context.Arbeiders.ToListAsync();
+
+            if (gebouwen.Any() && arbeiders.Any())
+            {
+                var koppelingen = new List<GebouwArbeider>
+                {
+                    new GebouwArbeider { GebouwId = gebouwen[0].Id, ArbeiderId = arbeiders[0].Id },
+                    new GebouwArbeider { GebouwId = gebouwen[0].Id, ArbeiderId = arbeiders[1].Id },
+                    new GebouwArbeider { GebouwId = gebouwen[1].Id, ArbeiderId = arbeiders[1].Id },
+                    new GebouwArbeider { GebouwId = gebouwen[2].Id, ArbeiderId = arbeiders[2].Id },
+                    new GebouwArbeider { GebouwId = gebouwen[3].Id, ArbeiderId = arbeiders[3].Id },
+                    new GebouwArbeider { GebouwId = gebouwen[4].Id, ArbeiderId = arbeiders[4].Id }
+                };
+                await context.GebouwArbeiders.AddRangeAsync(koppelingen);
+            }
+        }
+    }
+
+    private static async Task SeedBestellingenAsync(ApplicationDbContext context)
+    {
+        if (!await context.Bestellingen.AnyAsync())
+        {
+            // Wacht tot gebouwen en producten zijn opgeslagen
+            await context.SaveChangesAsync();
+
+            var gebouwen = await context.Gebouwen.ToListAsync();
+            var producten = await context.Producten.ToListAsync();
+
+            if (gebouwen.Any() && producten.Any())
+            {
+                var bestellingen = new List<Bestelling>
+                {
+                    new Bestelling { GebouwId = gebouwen[0].Id, ProductId = producten[0].Id, FrequentiePerMaand = 4, Datum = DateTime.Now, Bericht = "Normale levering" },
+                    new Bestelling { GebouwId = gebouwen[0].Id, ProductId = producten[1].Id, FrequentiePerMaand = 4, Datum = DateTime.Now },
+                    new Bestelling { GebouwId = gebouwen[1].Id, ProductId = producten[0].Id, FrequentiePerMaand = 8, Datum = DateTime.Now },
+                    new Bestelling { GebouwId = gebouwen[2].Id, ProductId = producten[2].Id, FrequentiePerMaand = 2, Datum = DateTime.Now, Bericht = "Extra levering nodig" }
+                };
+                await context.Bestellingen.AddRangeAsync(bestellingen);
+            }
+        }
+    }
+}

@@ -1,0 +1,191 @@
+﻿# MG Cleaning Productbeheer
+
+Een WPF Desktop applicatie voor het beheren van schoonmaakproducten, gebouwen, personeel en bestellingen voor MG Cleaning.
+
+## ?? Beschrijving
+
+Deze applicatie is ontwikkeld om MG Cleaning te helpen bij het beheren van:
+- **Gebouwen**: Beheer van te reinigen gebouwen met oppervlakte en aantal toiletten
+- **Producten**: Voorraadbeheer van schoonmaakproducten
+- **Personeel**: Beheer van arbeiders en hun koppelingen aan gebouwen
+- **Bestellingen**: Tracking van productbestellingen per gebouw
+
+## ??? Technologieën
+
+- **.NET 9.0**
+- **WPF (Windows Presentation Foundation)**
+- **Entity Framework Core 9.0**
+- **SQLite Database**
+- **Microsoft Identity Framework**
+- **MVVM Pattern**
+
+## ?? Gebruikte Libraries
+
+- `Microsoft.EntityFrameworkCore.Sqlite` (9.0.0)
+- `Microsoft.AspNetCore.Identity.EntityFrameworkCore` (9.0.0)
+- `Microsoft.EntityFrameworkCore.Design` (9.0.0)
+- `Microsoft.Extensions.DependencyInjection` (9.0.0)
+- `Microsoft.Extensions.Configuration.UserSecrets` (9.0.0)
+
+## ?? Installatie en Setup
+
+### Vereisten
+- Visual Studio 2022 of hoger
+- .NET 9.0 SDK
+- Windows 10/11
+
+### Stappen
+
+1. **Clone de repository**
+   ```bash
+   git clone [repository-url]
+   cd MG-cleaning
+   ```
+
+2. **Open de solution**
+   Open `MGCleaningSolution.sln` in Visual Studio
+
+3. **Restore NuGet packages**
+   ```bash
+   dotnet restore
+   ```
+
+4. **Database initialiseren**
+   
+   De database wordt automatisch aangemaakt bij de eerste start van de applicatie. De applicatie:
+   - Maakt een SQLite database aan (`mgcleaning.db`)
+   - Voert alle migraties uit
+   - Seed initiële data (rollen, gebruikers, dummy data)
+
+5. **Build en Run**
+   ```bash
+   dotnet build
+   dotnet run --project MGCleaning.Desktop
+   ```
+
+## ?? Standaard Gebruikers
+
+Na de eerste start zijn de volgende test accounts beschikbaar:
+
+| Email | Wachtwoord | Rol |
+|-------|------------|-----|
+| admin@mgcleaning.nl | Admin123! | Admin |
+| manager@mgcleaning.nl | Manager123! | Manager |
+| schoonmaker@mgcleaning.nl | Schoonmaker123! | Schoonmaker |
+
+## ?? Functionaliteiten
+
+### Admin
+- Volledige CRUD operaties op gebouwen, producten en personeel
+- Beheer van alle bestellingen
+- Gebruikersbeheer
+
+### Manager
+- Koppelen van arbeiders aan gebouwen
+- Bekijken van overzichten
+- Bestellingen beheren
+
+### Schoonmaker
+- Bekijken van toegewezen gebouwen
+- Melden van ontbrekende producten via berichten
+
+## ?? Database Schema
+
+### Entiteiten
+- **ApplicationUser**: Identity gebruikers met telefoonnummer en adres
+- **Gebouw**: Gebouwinformatie met oppervlakte en toiletten
+- **Product**: Producten met voorraad en gebruikshoeveelheden
+- **Arbeider**: Personeel met verantwoordelijkheid indicator
+- **GebouwArbeider**: Many-to-many relatie tussen gebouwen en arbeiders
+- **Bestelling**: Productbestellingen per gebouw
+
+### Soft Delete
+Alle entiteiten ondersteunen soft delete via de `IsDeleted` property. Verwijderde items worden niet getoond maar blijven in de database.
+
+## ?? User Interface
+
+De applicatie gebruikt:
+- **Grid**: Voor algemene layout structuren
+- **StackPanel**: Voor verticale/horizontale button layouts
+- **DockPanel**: Voor header/content indeling
+- **Custom HeaderControl**: Herbruikbare header component
+- **DataGrid**: Voor data weergave
+- **Styling**: Consistente kleuren en spacing
+
+## ?? Database Berekeningen
+
+### Productbehoeften per Gebouw
+
+**Vloerproducten:**
+```
+Hoeveelheid = (Oppervlakte m² / 100) * 1L per maand
+```
+
+**Toiletproducten:**
+```
+Hoeveelheid = (Aantal toiletten / 4) * 1L per maand
+```
+
+## ?? Beveiliging
+
+- Wachtwoorden worden gehashed opgeslagen via Identity Framework
+- Role-based authorization
+- User Secrets ondersteuning voor gevoelige configuratie
+
+## ?? LINQ Voorbeelden
+
+De applicatie bevat voorbeelden van:
+
+**Lambda Expressies:**
+```csharp
+await _context.Gebouwen
+    .Include(g => g.GebouwArbeiders)
+    .ThenInclude(ga => ga.Arbeider)
+    .ToListAsync();
+```
+
+**Query Syntax:**
+```csharp
+var query = from g in _context.Gebouwen
+            where g.Naam.Contains(zoekterm) || g.Adres.Contains(zoekterm)
+            orderby g.Naam
+            select g;
+```
+
+## ?? AI Assistentie
+
+Deze code is deels gegenereerd met behulp van **GitHub Copilot**. AI-assistentie is gebruikt voor:
+- Boilerplate code generatie
+- XAML layouts
+- Service layer implementaties
+- Database seeding logic
+
+## ?? Licentie
+
+Dit project is ontwikkeld als educatief project en gebruikt de volgende open-source licenties:
+- Microsoft .NET (MIT License)
+- Entity Framework Core (Apache 2.0)
+- SQLite (Public Domain)
+
+## ?? Bekende Issues
+
+- Database migraties worden momenteel niet gebruikt (EnsureCreated ipv Migrations)
+- SelecteerGebouwDialog gebruikt reflection voor context toegang
+- Geen async loading indicators in de UI
+
+## ?? Toekomstige Verbeteringen
+
+- [ ] Implementeer proper EF Core Migrations
+- [ ] Voeg loading indicators toe
+- [ ] Implementeer product voorraad berekeningen
+- [ ] Voeg rapportage functionaliteit toe
+- [ ] Implementeer export naar Excel
+- [ ] Voeg filtering en sorting toe aan DataGrids
+
+## ????? Ontwikkelaar
+
+Ontwikkeld door [Yazid] voor het project "MG Cleaning Productbeheer"
+
+---
+
+**Laatste update:** December 2024

@@ -1,0 +1,237 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|c:\\users\\yazid\\desktop\\project\\mg-cleaning\\mgcleaning.desktop\\viewmodels\\baseviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|solutionrelative:viewmodels\\baseviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{427B76A7-A3DC-48B5-AEE9-EBD9747316FA}|..\\MGCleaning.Models\\MGCleaning.Models.csproj|c:\\users\\yazid\\desktop\\project\\mg-cleaning\\mgcleaning.models\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|c:\\users\\yazid\\desktop\\project\\mg-cleaning\\mgcleaning.desktop\\services\\bestellingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|solutionrelative:services\\bestellingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|c:\\users\\yazid\\desktop\\project\\mg-cleaning\\mgcleaning.desktop\\services\\arbeiderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|solutionrelative:services\\arbeiderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|c:\\users\\yazid\\desktop\\project\\mg-cleaning\\mgcleaning.desktop\\views\\gebouweditdialog.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|solutionrelative:views\\gebouweditdialog.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{427B76A7-A3DC-48B5-AEE9-EBD9747316FA}|..\\MGCleaning.Models\\MGCleaning.Models.csproj|c:\\users\\yazid\\desktop\\project\\mg-cleaning\\mgcleaning.models\\dbseeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|c:\\users\\yazid\\desktop\\project\\mg-cleaning\\mgcleaning.desktop\\views\\gebouwenwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|solutionrelative:views\\gebouwenwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|c:\\users\\yazid\\desktop\\project\\mg-cleaning\\mgcleaning.desktop\\views\\gebouweditdialog.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|solutionrelative:views\\gebouweditdialog.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{427B76A7-A3DC-48B5-AEE9-EBD9747316FA}|..\\MGCleaning.Models\\MGCleaning.Models.csproj|c:\\users\\yazid\\desktop\\project\\mg-cleaning\\mgcleaning.models\\applicationdbcontextfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|c:\\users\\yazid\\desktop\\project\\mg-cleaning\\mgcleaning.desktop\\controls\\headercontrol.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|solutionrelative:controls\\headercontrol.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|c:\\users\\yazid\\desktop\\project\\mg-cleaning\\mgcleaning.desktop\\views\\productenwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|solutionrelative:views\\productenwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|c:\\users\\yazid\\desktop\\project\\mg-cleaning\\mgcleaning.desktop\\views\\selecteergebouwdialog.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|solutionrelative:views\\selecteergebouwdialog.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|c:\\users\\yazid\\desktop\\project\\mg-cleaning\\mgcleaning.desktop\\views\\productenwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|solutionrelative:views\\productenwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|c:\\users\\yazid\\desktop\\project\\mg-cleaning\\mgcleaning.desktop\\views\\selecteergebouwdialog.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D96986CA-7CDE-480B-88CA-59FF3680DEF4}|MGCleaning.Desktop.csproj|solutionrelative:views\\selecteergebouwdialog.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 6,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ArbeiderService.cs",
+              "DocumentMoniker": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\Services\\ArbeiderService.cs",
+              "RelativeDocumentMoniker": "Services\\ArbeiderService.cs",
+              "ToolTip": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\Services\\ArbeiderService.cs",
+              "RelativeToolTip": "Services\\ArbeiderService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFAAAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-10T13:52:58.637Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "GebouwEditDialog.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\Views\\GebouwEditDialog.xaml.cs",
+              "RelativeDocumentMoniker": "Views\\GebouwEditDialog.xaml.cs",
+              "ToolTip": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\Views\\GebouwEditDialog.xaml.cs",
+              "RelativeToolTip": "Views\\GebouwEditDialog.xaml.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAgwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-10T13:51:55.596Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "DbSeeder.cs",
+              "DocumentMoniker": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Models\\DbSeeder.cs",
+              "RelativeDocumentMoniker": "..\\MGCleaning.Models\\DbSeeder.cs",
+              "ToolTip": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Models\\DbSeeder.cs",
+              "RelativeToolTip": "..\\MGCleaning.Models\\DbSeeder.cs",
+              "ViewState": "AgIAAIIAAAAAAAAAAAAcwJ0AAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-10T13:51:31.819Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "GebouwenWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\Views\\GebouwenWindow.xaml",
+              "RelativeDocumentMoniker": "Views\\GebouwenWindow.xaml",
+              "ToolTip": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\Views\\GebouwenWindow.xaml",
+              "RelativeToolTip": "Views\\GebouwenWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-11-10T13:49:22.727Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "GebouwEditDialog.xaml",
+              "DocumentMoniker": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\Views\\GebouwEditDialog.xaml",
+              "RelativeDocumentMoniker": "Views\\GebouwEditDialog.xaml",
+              "ToolTip": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\Views\\GebouwEditDialog.xaml",
+              "RelativeToolTip": "Views\\GebouwEditDialog.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-11-10T13:49:18.76Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ApplicationDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Models\\ApplicationDbContext.cs",
+              "RelativeDocumentMoniker": "..\\MGCleaning.Models\\ApplicationDbContext.cs",
+              "ToolTip": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Models\\ApplicationDbContext.cs",
+              "RelativeToolTip": "..\\MGCleaning.Models\\ApplicationDbContext.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAjwCMAAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-10T13:25:24.795Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "BaseViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\ViewModels\\BaseViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModels\\BaseViewModel.cs",
+              "ToolTip": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\ViewModels\\BaseViewModel.cs",
+              "RelativeToolTip": "ViewModels\\BaseViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-10T13:27:37.293Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "BestellingService.cs",
+              "DocumentMoniker": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\Services\\BestellingService.cs",
+              "RelativeDocumentMoniker": "Services\\BestellingService.cs",
+              "ToolTip": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\Services\\BestellingService.cs",
+              "RelativeToolTip": "Services\\BestellingService.cs",
+              "ViewState": "AgIAAD4AAAAAAAAAAAAAAFEAAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-10T13:53:50.213Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ApplicationDbContextFactory.cs",
+              "DocumentMoniker": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Models\\ApplicationDbContextFactory.cs",
+              "RelativeDocumentMoniker": "..\\MGCleaning.Models\\ApplicationDbContextFactory.cs",
+              "ToolTip": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Models\\ApplicationDbContextFactory.cs",
+              "RelativeToolTip": "..\\MGCleaning.Models\\ApplicationDbContextFactory.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-10T13:25:26.469Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "HeaderControl.xaml",
+              "DocumentMoniker": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\Controls\\HeaderControl.xaml",
+              "RelativeDocumentMoniker": "Controls\\HeaderControl.xaml",
+              "ToolTip": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\Controls\\HeaderControl.xaml",
+              "RelativeToolTip": "Controls\\HeaderControl.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-11-10T13:14:56.379Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "ProductenWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\Views\\ProductenWindow.xaml.cs",
+              "RelativeDocumentMoniker": "Views\\ProductenWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\Views\\ProductenWindow.xaml.cs",
+              "RelativeToolTip": "Views\\ProductenWindow.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-10T13:10:05.485Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "ProductenWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\Views\\ProductenWindow.xaml",
+              "RelativeDocumentMoniker": "Views\\ProductenWindow.xaml",
+              "ToolTip": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\Views\\ProductenWindow.xaml",
+              "RelativeToolTip": "Views\\ProductenWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-11-10T13:09:58.762Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "SelecteerGebouwDialog.xaml",
+              "DocumentMoniker": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\Views\\SelecteerGebouwDialog.xaml",
+              "RelativeDocumentMoniker": "Views\\SelecteerGebouwDialog.xaml",
+              "ToolTip": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\Views\\SelecteerGebouwDialog.xaml",
+              "RelativeToolTip": "Views\\SelecteerGebouwDialog.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-11-10T13:09:55.613Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "SelecteerGebouwDialog.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\Views\\SelecteerGebouwDialog.xaml.cs",
+              "RelativeDocumentMoniker": "Views\\SelecteerGebouwDialog.xaml.cs",
+              "ToolTip": "C:\\Users\\yazid\\Desktop\\Project\\MG-cleaning\\MGCleaning.Desktop\\Views\\SelecteerGebouwDialog.xaml.cs",
+              "RelativeToolTip": "Views\\SelecteerGebouwDialog.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-10T13:06:05.682Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

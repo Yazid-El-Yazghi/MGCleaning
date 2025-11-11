@@ -1,0 +1,213 @@
+﻿# MG Cleaning Productbeheer
+
+Een WPF Desktop applicatie voor het beheren van schoonmaakproducten, gebouwen, personeel en bestellingen voor MG Cleaning.
+
+## 📋 Beschrijving
+
+Deze applicatie is ontwikkeld om MG Cleaning te helpen bij het beheren van:
+- **Gebouwen**: Beheer van te reinigen gebouwen met oppervlakte en aantal toiletten
+- **Producten**: Voorraadbeheer van schoonmaakproducten
+- **Personeel**: Beheer van arbeiders en hun koppelingen aan gebouwen
+- **Bestellingen**: Tracking van productbestellingen per gebouw
+- **Calculator**: Automatische berekening van benodigde producten en personeel per gebouw
+- **Gebruikersbeheer**: Rol-gebaseerde toegangscontrole (Admin, Manager, Schoonmaker)
+
+## 🛠 Technologieën
+
+- **.NET 9.0**
+- **WPF (Windows Presentation Foundation)**
+- **Entity Framework Core 9.0**
+- **SQLite Database**
+- **Microsoft Identity Framework**
+- **MVVM Pattern**
+
+## 📦 Gebruikte Libraries en Licenties
+
+| Package | Versie | Licentie |
+|---------|--------|----------|
+| Microsoft.EntityFrameworkCore.Sqlite | 9.0.0 | MIT |
+| Microsoft.AspNetCore.Identity.EntityFrameworkCore | 9.0.0 | Apache 2.0 |
+| Microsoft.EntityFrameworkCore.Design | 9.0.10 | MIT |
+| Microsoft.Extensions.DependencyInjection | 9.0.10 | MIT |
+| Microsoft.Extensions.Configuration.UserSecrets | 9.0.0 | MIT |
+| Microsoft.AspNetCore.Identity | 2.2.0 | Apache 2.0 |
+
+Alle gebruikte packages hebben open-source licenties die commercieel gebruik toestaan.
+
+## 🚀 Installatie en Setup
+
+### Vereisten
+- Visual Studio 2022 of hoger
+- .NET 9.0 SDK
+- Windows 10/11
+
+### Stappen
+
+1. **Clone de repository**
+   ```bash
+   git clone [repository-url]
+   cd MG-cleaning
+   ```
+
+2. **Restore NuGet packages**
+   ```bash
+   dotnet restore
+   ```
+
+3. **Database initialiseren met Migrations**
+   
+   Navigeer naar het Models project:
+   ```bash
+   cd MGCleaning.Models
+   ```
+
+   Pas de migraties toe:
+   ```bash
+   dotnet ef database update --startup-project ../MGCleaning.Desktop
+   ```
+
+   De database wordt aangemaakt in: `MGCleaning.Desktop/mgcleaning.db`
+
+4. **User Secrets configureren (BELANGRIJK!)**
+
+   De applicatie gebruikt User Secrets voor gevoelige data. Configureer de standaard wachtwoorden:
+
+   ```bash
+   cd MGCleaning.Desktop
+   dotnet user-secrets init
+   dotnet user-secrets set "SeedPasswords:Admin" "admin123"
+   dotnet user-secrets set "SeedPasswords:Manager" "manager123"
+   dotnet user-secrets set "SeedPasswords:Schoonmaker" "schoonmaker123"
+   ```
+
+   **Waarschuwing**: Wijzig deze wachtwoorden voor productie gebruik!
+
+5. **Build en Run**
+   ```bash
+   dotnet build
+   dotnet run --project MGCleaning.Desktop
+   ```
+
+## 👤 Standaard Gebruikers
+
+Na de eerste start zijn de volgende test accounts beschikbaar:
+
+| Gebruikersnaam | Rol | Standaard Wachtwoord |
+|----------------|-----|---------------------|
+| admin | Admin | admin123 (via User Secrets) |
+| manager | Manager | manager123 (via User Secrets) |
+| schoonmaker | Schoonmaker | schoonmaker123 (via User Secrets) |
+
+## 🔐 Security - User Secrets
+
+**BELANGRIJK**: Deze applicatie gebruikt **User Secrets** voor alle gevoelige informatie:
+- ✅ Wachtwoorden worden NIET in de code opgeslagen
+- ✅ Wachtwoorden staan NIET op GitHub
+- ✅ Elke developer moet User Secrets lokaal configureren (zie stap 4)
+
+## 📊 EF Core Migrations
+
+### Migrations Aanmaken
+```bash
+cd MGCleaning.Models
+dotnet ef migrations add MigratieNaam --startup-project ../MGCleaning.Desktop
+```
+
+### Database Updaten
+```bash
+dotnet ef database update --startup-project ../MGCleaning.Desktop
+```
+
+### Database Opnieuw Aanmaken
+```bash
+# Verwijder database
+rm ../MGCleaning.Desktop/mgcleaning.db
+
+# Update database
+dotnet ef database update --startup-project ../MGCleaning.Desktop
+```
+
+## 🤖 AI-Gegenereerde Code
+
+Deze applicatie is grotendeels ontwikkeld met behulp van **GitHub Copilot**. 
+
+### AI Tools Gebruikt
+- **GitHub Copilot**: Code suggesties en automatische code generatie
+- **GitHub Copilot Chat**: Debugging, code uitleg en refactoring
+
+### AI Code Verantwoording
+Alle AI-gegenereerde code in dit project is:
+- ✅ **Getest en werkend**: Alle functionaliteit is getest
+- ✅ **Volledig begrepen**: Developer begrijpt alle gegenereerde code
+- ✅ **Gedocumenteerd**: Code bevat duidelijke comments
+- ✅ **Aangepast**: AI suggesties zijn aangepast aan projectvereisten
+- ✅ **EHB CopyWrite compliant**: Voldoet aan alle schoolregels
+
+## 📄 Copyright & Licentie
+
+### Eigen Code
+Alle applicatie-specifieke code is eigendom van de ontwikkelaar(s) en voldoet aan de **EHB CopyWrite regels**:
+- ✅ Geen gebruik van bestaande broncode zonder toestemming
+- ✅ Alle dependencies hebben compatibele licenties
+- ✅ AI-gegenereerde code is volledig begrepen en gedocumenteerd
+- ✅ Code is integraal zelf geschreven (met AI assistentie)
+
+### Dependencies Licenties
+Alle gebruikte NuGet packages zijn open-source met permissive licenties:
+- **MIT License**: Staat commercieel gebruik, modificatie en distributie toe
+- **Apache 2.0**: Staat commercieel gebruik toe met patent grants
+
+## 🎯 Rol-gebaseerde Functionaliteiten
+
+### Admin
+- ✅ Volledige CRUD operaties
+- ✅ Gebruikersbeheer (aanmaken, bewerken, blokkeren, verwijderen)
+- ✅ Rol wijzigen (kan eigen rol NIET wijzigen)
+- ✅ Calculator toegang
+
+### Manager
+- ✅ CRUD operaties (gebouwen, producten, personeel, bestellingen)
+- ✅ Schoonmakers beheren
+- ✅ Calculator toegang
+
+### Schoonmaker
+- ✅ Nieuwe bestellingen plaatsen
+- ✅ Bestellingen bekijken (read-only)
+- ✅ Eigen profiel bewerken
+
+## 🗄 Database Schema
+
+### Entiteiten
+- **ApplicationUser**: Identity gebruikers met extra properties
+- **Gebouw**: Gebouwen met oppervlakte
+- **Product**: Producten met voorraad
+- **Arbeider**: Schoonmakers
+- **GebouwArbeider**: Many-to-many koppeling
+- **Bestelling**: Productbestellingen
+
+### Soft Delete
+Alle entiteiten (inclusief GebouwArbeider) ondersteunen soft delete via `IsDeleted` en global query filters.
+
+## 🐛 Troubleshooting
+
+### User Secrets Niet Gevonden
+```bash
+cd MGCleaning.Desktop
+dotnet user-secrets list
+```
+
+### Database Issues
+```bash
+# Verwijder en herbouw
+rm MGCleaning.Desktop/mgcleaning.db
+cd MGCleaning.Models
+dotnet ef database update --startup-project ../MGCleaning.Desktop
+```
+
+---
+
+**Versie**: 1.0.0  
+**Datum**: 2025  
+**.NET Versie**: 9.0  
+
+**Let op**: Dit project is ontwikkeld als schoolopdracht voor Erasmushogeschool Brussel (EHB) en voldoet aan alle gestelde vereisten inclusief CopyWrite beleid en gebruik van AI tools.

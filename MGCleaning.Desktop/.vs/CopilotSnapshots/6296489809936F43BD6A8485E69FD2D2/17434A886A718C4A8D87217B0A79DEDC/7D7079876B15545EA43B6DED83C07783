@@ -1,0 +1,301 @@
+﻿using System.Windows;
+using System.Windows.Controls;
+using MGCleaning.Desktop.Services;
+using MGCleaning.Models;
+using Microsoft.AspNetCore.Identity;
+
+namespace MGCleaning.Desktop.Views;
+
+public partial class AccountWindow : Window
+{
+    private readonly AuthService _authService;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private bool _isAdmin;
+    private bool _isManager;
+
+    public AccountWindow(AuthService authService, UserManager<ApplicationUser> userManager)
+    {
+        InitializeComponent();
+        _authService = authService;
+        _userManager = userManager;
+        Loaded += AccountWindow_Loaded;
+    }
+
+    private async void AccountWindow_Loaded(object sender, RoutedEventArgs e)
+    {
+        await UpdateAccountInfoAsync();
+        await ConfigureRoleBasedAccessAsync();
+        await LoadUsersAsync();
+    }
+
+    private async Task ConfigureRoleBasedAccessAsync()
+    {
+        if (_authService.HuidigeGebruiker == null)
+            return;
+
+        var rollen = await _authService.GetRollenAsync(_authService.HuidigeGebruiker);
+        _isAdmin = rollen.Contains("Admin");
+        _isManager = rollen.Contains("Manager");
+
+        // Nieuwe User tab alleen zichtbaar voor Admin en Manager
+        NieuweUserTab.Visibility = (_isAdmin || _isManager) ? Visibility.Visible : Visibility.Collapsed;
+        
+        // All Users tab alleen zichtbaar voor Admin en Manager
+        AllUsersTab.Visibility = (_isAdmin || _isManager) ? Visibility.Visible : Visibility.Collapsed;
+
+        // Rol combobox opties configureren
+        RegisterRolComboBox.Items.Clear();
+        
+        if (_isAdmin)
+        {
+            // Admin kan alle rollen aanmaken
+            RegisterRolComboBox.Items.Add(new ComboBoxItem { Content = "Admin" });
+            RegisterRolComboBox.Items.Add(new ComboBoxItem { Content = "Manager" });
+            RegisterRolComboBox.Items.Add(new ComboBoxItem { Content = "Schoonmaker" });
+            RegisterRolComboBox.SelectedIndex = 2; // Default: Schoonmaker
+        }
+        else if (_isManager)
+        {
+            // Manager kan alleen Schoonmakers aanmaken
+            RegisterRolComboBox.Items.Add(new ComboBoxItem { Content = "Schoonmaker" });
+            RegisterRolComboBox.SelectedIndex = 0;
+        }
+    }
+
+    private async Task UpdateAccountInfoAsync()
+    {
+        if (_authService.HuidigeGebruiker != null)
+        {
+            MyUsernameTextBox.Text = _authService.HuidigeGebruiker.UserName;
+            MyEmailTextBox.Text = _authService.HuidigeGebruiker.Email;
+            MyTelefoonnummerTextBox.Text = _authService.HuidigeGebruiker.Telefoonnummer;
+            MyAdresTextBox.Text = _authService.HuidigeGebruiker.Adres;
+
+            var rollen = await _authService.GetRollenAsync(_authService.HuidigeGebruiker);
+            MyAccountRolTextBlock.Text = $"Rol(len): {string.Join(", ", rollen)}";
+        }
+    }
+
+    private async Task LoadUsersAsync()
+    {
+        if (_authService.HuidigeGebruiker == null)
+            return;
+
+        try
+        {
+            var rollen = await _authService.GetRollenAsync(_authService.HuidigeGebruiker);
+            var alleUsers = _userManager.Users.ToList();
+
+            if (rollen.Contains("Manager") && !rollen.Contains("Admin"))
+            {
+                // Manager ziet alleen Schoonmakers
+                var schoonmakerUsers = new List<ApplicationUser>();
+                foreach (var user in alleUsers)
+                {
+                    var userRoles = await _userManager.GetRolesAsync(user);
+                    if (userRoles.Contains("Schoonmaker"))
+                    {
+                        schoonmakerUsers.Add(user);
+                    }
+                }
+                UsersDataGrid.ItemsSource = schoonmakerUsers;
+            }
+            else if (rollen.Contains("Admin"))
+            {
+                // Admin ziet alle gebruikers
+                UsersDataGrid.ItemsSource = alleUsers;
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Fout bij laden gebruikers: {ex.Message}", "Fout", 
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private async void OpslaanGegevensButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            MyAccountStatusTextBlock.Text = "";
+            MyAccountStatusTextBlock.Foreground = System.Windows.Media.Brushes.Red;
+
+            if (_authService.HuidigeGebruiker == null)
+                return;
+
+            // Update gebruikersgegevens
+            _authService.HuidigeGebruiker.Email = MyEmailTextBox.Text;
+            _authService.HuidigeGebruiker.Telefoonnummer = MyTelefoonnummerTextBox.Text;
+            _authService.HuidigeGebruiker.Adres = MyAdresTextBox.Text;
+
+            var result = await _userManager.UpdateAsync(_authService.HuidigeGebruiker);
+
+            if (result.Succeeded)
+            {
+                MyAccountStatusTextBlock.Foreground = System.Windows.Media.Brushes.Green;
+                MyAccountStatusTextBlock.Text = "Gegevens succesvol opgeslagen!";
+            }
+            else
+            {
+                MyAccountStatusTextBlock.Foreground = System.Windows.Media.Brushes.Red;
+                MyAccountStatusTextBlock.Text = "Fout bij opslaan gegevens.";
+            }
+        }
+        catch (Exception ex)
+        {
+            MyAccountStatusTextBlock.Foreground = System.Windows.Media.Brushes.Red;
+            MyAccountStatusTextBlock.Text = $"Fout: {ex.Message}";
+        }
+    }
+
+    private async void RegisterenButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            RegisterStatusTextBlock.Text = "";
+            RegisterStatusTextBlock.Foreground = System.Windows.Media.Brushes.Red;
+
+            if (string.IsNullOrWhiteSpace(RegisterUsernameTextBox.Text))
+            {
+                RegisterStatusTextBlock.Text = "Gebruikersnaam is verplicht.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(RegisterWachtwoordBox.Password))
+            {
+                RegisterStatusTextBlock.Text = "Wachtwoord is verplicht.";
+                return;
+            }
+
+            if (RegisterWachtwoordBox.Password.Length < 5)
+            {
+                RegisterStatusTextBlock.Text = "Wachtwoord moet minimaal 5 karakters zijn.";
+                return;
+            }
+
+            var rol = (RegisterRolComboBox.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Schoonmaker";
+
+            var success = await _authService.RegisterAsync(
+                RegisterUsernameTextBox.Text,
+                RegisterWachtwoordBox.Password,
+                RegisterEmailTextBox.Text,
+                RegisterTelefoonTextBox.Text,
+                RegisterAdresTextBox.Text,
+                rol
+            );
+
+            if (success)
+            {
+                RegisterStatusTextBlock.Foreground = System.Windows.Media.Brushes.Green;
+                RegisterStatusTextBlock.Text = "Gebruiker succesvol aangemaakt!";
+                
+                // Clear form
+                RegisterUsernameTextBox.Clear();
+                RegisterWachtwoordBox.Clear();
+                RegisterEmailTextBox.Clear();
+                RegisterTelefoonTextBox.Clear();
+                RegisterAdresTextBox.Clear();
+                RegisterRolComboBox.SelectedIndex = _isAdmin ? 2 : 0;
+                
+                // Refresh users list
+                await LoadUsersAsync();
+            }
+            else
+            {
+                RegisterStatusTextBlock.Text = "Aanmaken mislukt. Gebruikersnaam bestaat mogelijk al.";
+            }
+        }
+        catch (Exception ex)
+        {
+            RegisterStatusTextBlock.Text = $"Fout: {ex.Message}";
+        }
+    }
+
+    private void BewerkenUserButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (UsersDataGrid.SelectedItem is ApplicationUser selectedUser)
+        {
+            var dialog = new UserEditDialog(_userManager, _authService, selectedUser, _isAdmin);
+            if (dialog.ShowDialog() == true)
+            {
+                _ = LoadUsersAsync();
+            }
+        }
+        else
+        {
+            MessageBox.Show("Selecteer eerst een gebruiker.", "Waarschuwing", 
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    private async void VerwijderenUserButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (UsersDataGrid.SelectedItem is ApplicationUser selectedUser)
+        {
+            if (selectedUser.Id == _authService.HuidigeGebruiker?.Id)
+            {
+                MessageBox.Show("Je kunt je eigen account niet verwijderen.", "Waarschuwing", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show($"Weet u zeker dat u gebruiker '{selectedUser.UserName}' wilt verwijderen?", 
+                "Bevestiging", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    await _userManager.DeleteAsync(selectedUser);
+                    await LoadUsersAsync();
+                    MessageBox.Show("Gebruiker succesvol verwijderd.", "Succes", 
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Fout bij verwijderen: {ex.Message}", "Fout", 
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+        else
+        {
+            MessageBox.Show("Selecteer eerst een gebruiker.", "Waarschuwing", 
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    private async void RefreshUsersButton_Click(object sender, RoutedEventArgs e)
+    {
+        await LoadUsersAsync();
+    }
+
+    private async void UitloggenButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var result = MessageBox.Show("Weet u zeker dat u wilt uitloggen?", "Uitloggen", 
+                MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                await _authService.LogoutAsync();
+                
+                // Sluit alle windows en herstart applicatie
+                Application.Current.Shutdown();
+                System.Diagnostics.Process.Start(
+                    System.Diagnostics.Process.GetCurrentProcess().MainModule!.FileName);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Fout bij uitloggen: {ex.Message}", "Fout", 
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void SluitenButton_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+}

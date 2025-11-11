@@ -1,0 +1,155 @@
+﻿using System.Windows;
+using System.Windows.Controls;
+using MGCleaning.Desktop.Services;
+
+namespace MGCleaning.Desktop.Views;
+
+public partial class AccountWindow : Window
+{
+    private readonly AuthService _authService;
+
+    public AccountWindow(AuthService authService)
+    {
+        InitializeComponent();
+        _authService = authService;
+        Loaded += AccountWindow_Loaded;
+    }
+
+    private async void AccountWindow_Loaded(object sender, RoutedEventArgs e)
+    {
+        await UpdateAccountInfoAsync();
+    }
+
+    private async Task UpdateAccountInfoAsync()
+    {
+        if (_authService.HuidigeGebruiker != null)
+        {
+            AccountInfoTextBlock.Text = $"Email: {_authService.HuidigeGebruiker.Email}\n" +
+                                        $"Telefoonnummer: {_authService.HuidigeGebruiker.Telefoonnummer}\n" +
+                                        $"Adres: {_authService.HuidigeGebruiker.Adres}";
+
+            var rollen = await _authService.GetRollenAsync(_authService.HuidigeGebruiker);
+            AccountRolTextBlock.Text = $"Rol(len): {string.Join(", ", rollen)}";
+        }
+        else
+        {
+            AccountInfoTextBlock.Text = "Niet ingelogd";
+            AccountRolTextBlock.Text = "";
+        }
+    }
+
+    private async void InloggenButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            LoginStatusTextBlock.Text = "";
+
+            if (string.IsNullOrWhiteSpace(LoginEmailTextBox.Text))
+            {
+                LoginStatusTextBlock.Text = "Email is verplicht.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(LoginWachtwoordBox.Password))
+            {
+                LoginStatusTextBlock.Text = "Wachtwoord is verplicht.";
+                return;
+            }
+
+            var success = await _authService.LoginAsync(LoginEmailTextBox.Text, LoginWachtwoordBox.Password);
+
+            if (success)
+            {
+                MessageBox.Show("Succesvol ingelogd!", "Succes", 
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                await UpdateAccountInfoAsync();
+                LoginEmailTextBox.Clear();
+                LoginWachtwoordBox.Clear();
+            }
+            else
+            {
+                LoginStatusTextBlock.Text = "Ongeldige inloggegevens.";
+            }
+        }
+        catch (Exception ex)
+        {
+            LoginStatusTextBlock.Text = $"Fout: {ex.Message}";
+        }
+    }
+
+    private async void RegisterenButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            RegisterStatusTextBlock.Text = "";
+
+            if (string.IsNullOrWhiteSpace(RegisterEmailTextBox.Text))
+            {
+                RegisterStatusTextBlock.Text = "Email is verplicht.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(RegisterWachtwoordBox.Password))
+            {
+                RegisterStatusTextBlock.Text = "Wachtwoord is verplicht.";
+                return;
+            }
+
+            if (RegisterWachtwoordBox.Password.Length < 6)
+            {
+                RegisterStatusTextBlock.Text = "Wachtwoord moet minimaal 6 karakters zijn.";
+                return;
+            }
+
+            var rol = (RegisterRolComboBox.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Schoonmaker";
+
+            var success = await _authService.RegisterAsync(
+                RegisterEmailTextBox.Text,
+                RegisterWachtwoordBox.Password,
+                RegisterTelefoonTextBox.Text,
+                RegisterAdresTextBox.Text,
+                rol
+            );
+
+            if (success)
+            {
+                MessageBox.Show("Registratie succesvol! U kunt nu inloggen.", "Succes", 
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                RegisterEmailTextBox.Clear();
+                RegisterWachtwoordBox.Clear();
+                RegisterTelefoonTextBox.Clear();
+                RegisterAdresTextBox.Clear();
+                RegisterRolComboBox.SelectedIndex = 2;
+            }
+            else
+            {
+                RegisterStatusTextBlock.Text = "Registratie mislukt. Probeer een ander emailadres.";
+            }
+        }
+        catch (Exception ex)
+        {
+            RegisterStatusTextBlock.Text = $"Fout: {ex.Message}";
+        }
+    }
+
+    private async void UitloggenButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await _authService.LogoutAsync();
+            MessageBox.Show("U bent uitgelogd.", "Uitloggen", 
+                MessageBoxButton.OK, MessageBoxImage.Information);
+            await UpdateAccountInfoAsync();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Fout bij uitloggen: {ex.Message}", "Fout", 
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void SluitenButton_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+}

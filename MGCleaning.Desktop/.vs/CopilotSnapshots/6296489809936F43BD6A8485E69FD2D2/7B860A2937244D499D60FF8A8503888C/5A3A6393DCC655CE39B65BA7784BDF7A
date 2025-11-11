@@ -1,0 +1,129 @@
+﻿using System.Windows;
+using MGCleaning.Desktop.Services;
+using MGCleaning.Models;
+
+namespace MGCleaning.Desktop.Views;
+
+public partial class BestellingEditDialog : Window
+{
+    private readonly BestellingService _bestellingService;
+    private readonly GebouwService _gebouwService;
+    private readonly ProductService _productService;
+    private readonly Bestelling? _bestelling;
+
+    public BestellingEditDialog(BestellingService bestellingService, GebouwService gebouwService, 
+        ProductService productService, Bestelling? bestelling = null)
+    {
+        InitializeComponent();
+        _bestellingService = bestellingService;
+        _gebouwService = gebouwService;
+        _productService = productService;
+        _bestelling = bestelling;
+
+        Loaded += BestellingEditDialog_Loaded;
+    }
+
+    private async void BestellingEditDialog_Loaded(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var gebouwen = await _gebouwService.GetAlleGebouwenAsync();
+            GebouwComboBox.ItemsSource = gebouwen;
+
+            var producten = await _productService.GetAlleProductenAsync();
+            ProductComboBox.ItemsSource = producten;
+
+            if (_bestelling != null)
+            {
+                GebouwComboBox.SelectedItem = gebouwen.FirstOrDefault(g => g.Id == _bestelling.GebouwId);
+                ProductComboBox.SelectedItem = producten.FirstOrDefault(p => p.Id == _bestelling.ProductId);
+                FrequentieTextBox.Text = _bestelling.FrequentiePerMaand.ToString();
+                DatumPicker.SelectedDate = _bestelling.Datum;
+                BerichtTextBox.Text = _bestelling.Bericht;
+                Title = "Bestelling Wijzigen";
+            }
+            else
+            {
+                DatumPicker.SelectedDate = DateTime.Now;
+                Title = "Nieuwe Bestelling";
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Fout bij laden: {ex.Message}", "Fout", 
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private async void OpslaanButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (GebouwComboBox.SelectedItem is not Gebouw gebouw)
+            {
+                MessageBox.Show("Selecteer een gebouw.", "Validatie", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (ProductComboBox.SelectedItem is not Product product)
+            {
+                MessageBox.Show("Selecteer een product.", "Validatie", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!int.TryParse(FrequentieTextBox.Text, out var frequentie) || frequentie <= 0)
+            {
+                MessageBox.Show("Voer een geldige frequentie in.", "Validatie", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!DatumPicker.SelectedDate.HasValue)
+            {
+                MessageBox.Show("Selecteer een datum.", "Validatie", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (_bestelling != null)
+            {
+                // Wijzigen
+                _bestelling.GebouwId = gebouw.Id;
+                _bestelling.ProductId = product.Id;
+                _bestelling.FrequentiePerMaand = frequentie;
+                _bestelling.Datum = DatumPicker.SelectedDate.Value;
+                _bestelling.Bericht = BerichtTextBox.Text;
+                await _bestellingService.BijwerkenAsync(_bestelling);
+            }
+            else
+            {
+                // Toevoegen
+                var nieuweBestelling = new Bestelling
+                {
+                    GebouwId = gebouw.Id,
+                    ProductId = product.Id,
+                    FrequentiePerMaand = frequentie,
+                    Datum = DatumPicker.SelectedDate.Value,
+                    Bericht = BerichtTextBox.Text
+                };
+                await _bestellingService.ToevoegenAsync(nieuweBestelling);
+            }
+
+            DialogResult = true;
+            Close();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Fout bij opslaan: {ex.Message}", "Fout", 
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void AnnulerenButton_Click(object sender, RoutedEventArgs e)
+    {
+        DialogResult = false;
+        Close();
+    }
+}

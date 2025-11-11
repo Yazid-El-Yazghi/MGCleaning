@@ -1,0 +1,99 @@
+﻿using System.Windows;
+using MGCleaning.Desktop.Services;
+using MGCleaning.Models;
+
+namespace MGCleaning.Desktop.Views;
+
+public partial class GebouwenWindow : Window
+{
+    private readonly GebouwService _gebouwService;
+    private readonly AuthService _authService;
+
+    public GebouwenWindow(GebouwService gebouwService, AuthService authService)
+    {
+        InitializeComponent();
+        _gebouwService = gebouwService;
+        _authService = authService;
+        Loaded += GebouwenWindow_Loaded;
+    }
+
+    private async void GebouwenWindow_Loaded(object sender, RoutedEventArgs e)
+    {
+        await LaadGebouwenAsync();
+    }
+
+    private async Task LaadGebouwenAsync()
+    {
+        try
+        {
+            var gebouwen = await _gebouwService.GetAlleGebouwenAsync();
+            GebouwenDataGrid.ItemsSource = gebouwen;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Fout bij laden gebouwen: {ex.Message}", "Fout", 
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void ToevoegenButton_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new GebouwEditDialog(_gebouwService);
+        if (dialog.ShowDialog() == true)
+        {
+            _ = LaadGebouwenAsync();
+        }
+    }
+
+    private void WijzigenButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (GebouwenDataGrid.SelectedItem is Gebouw geselecteerd)
+        {
+            var dialog = new GebouwEditDialog(_gebouwService, geselecteerd);
+            if (dialog.ShowDialog() == true)
+            {
+                _ = LaadGebouwenAsync();
+            }
+        }
+        else
+        {
+            MessageBox.Show("Selecteer eerst een gebouw.", "Waarschuwing", 
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    private async void VerwijderenButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (GebouwenDataGrid.SelectedItem is Gebouw geselecteerd)
+        {
+            var result = MessageBox.Show($"Weet u zeker dat u '{geselecteerd.Naam}' wilt verwijderen?", 
+                "Bevestiging", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    await _gebouwService.VerwijderenAsync(geselecteerd.Id);
+                    await LaadGebouwenAsync();
+                    MessageBox.Show("Gebouw succesvol verwijderd.", "Succes", 
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Fout bij verwijderen: {ex.Message}", "Fout", 
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+        else
+        {
+            MessageBox.Show("Selecteer eerst een gebouw.", "Waarschuwing", 
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    private void TerugButton_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+}

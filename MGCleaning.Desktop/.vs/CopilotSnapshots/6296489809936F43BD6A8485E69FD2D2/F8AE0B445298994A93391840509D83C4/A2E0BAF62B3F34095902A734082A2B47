@@ -1,0 +1,134 @@
+﻿using System.Windows;
+using MGCleaning.Desktop.Services;
+using MGCleaning.Models;
+
+namespace MGCleaning.Desktop.Views;
+
+public partial class BestellingenWindow : Window
+{
+    private readonly BestellingService _bestellingService;
+    private readonly GebouwService _gebouwService;
+    private readonly ProductService _productService;
+    private readonly AuthService _authService;
+
+    public BestellingenWindow(BestellingService bestellingService, GebouwService gebouwService, 
+        ProductService productService, AuthService authService)
+    {
+        InitializeComponent();
+        _bestellingService = bestellingService;
+        _gebouwService = gebouwService;
+        _productService = productService;
+        _authService = authService;
+        Loaded += BestellingenWindow_Loaded;
+    }
+
+    private async void BestellingenWindow_Loaded(object sender, RoutedEventArgs e)
+    {
+        await ConfigureUIBasedOnRole();
+        await LaadBestellingenAsync();
+    }
+
+    private async Task ConfigureUIBasedOnRole()
+    {
+        if (_authService.HuidigeGebruiker == null)
+            return;
+
+        var rollen = await _authService.GetRollenAsync(_authService.HuidigeGebruiker);
+        var isAdminOrManager = rollen.Contains("Admin") || rollen.Contains("Manager");
+        var isSchoonmaker = rollen.Contains("Schoonmaker");
+
+        // Wijzigen en Verwijderen alleen voor Admin en Manager
+        WijzigenButton.Visibility = isAdminOrManager ? Visibility.Visible : Visibility.Collapsed;
+        VerwijderenButton.Visibility = isAdminOrManager ? Visibility.Visible : Visibility.Collapsed;
+        
+        // DataGrid is alleen bewerkbaar voor Admin en Manager
+        BestellingenDataGrid.IsReadOnly = !isAdminOrManager;
+        
+        // Disable dubbelklik bewerken voor Schoonmakers
+        if (isSchoonmaker)
+        {
+            BestellingenDataGrid.MouseDoubleClick -= BestellingenDataGrid_MouseDoubleClick;
+        }
+        else
+        {
+            BestellingenDataGrid.MouseDoubleClick += BestellingenDataGrid_MouseDoubleClick;
+        }
+        
+        // Nieuwe Bestelling is altijd zichtbaar (ook voor Schoonmakers)
+    }
+
+    private async Task LaadBestellingenAsync()
+    {
+        try
+        {
+            var bestellingen = await _bestellingService.GetAlleBestellingenAsync();
+            BestellingenDataGrid.ItemsSource = bestellingen;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Fout bij laden bestellingen: {ex.Message}", "Fout", 
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void ToevoegenButton_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new BestellingEditDialog(_bestellingService, _gebouwService, _productService, _authService);
+        if (dialog.ShowDialog() == true)
+        {
+            _ = LaadBestellingenAsync();
+        }
+    }
+
+    private void WijzigenButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (BestellingenDataGrid.SelectedItem is Bestelling geselecteerd)
+        {
+            var dialog = new BestellingEditDialog(_bestellingService, _gebouwService, _productService, _authService, geselecteerd);
+            if (dialog.ShowDialog() == true)
+            {
+                _ = LaadBestellingenAsync();
+            }
+        }
+        else
+        {
+            MessageBox.Show("Selecteer eerst een bestelling.", "Waarschuwing", 
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    private async void VerwijderenButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (BestellingenDataGrid.SelectedItem is Bestelling geselecteerd)
+        {
+            var result = MessageBox.Show($"Weet u zeker dat u deze bestelling wilt verwijderen?", 
+                "Bevestiging", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    await _bestellingService.VerwijderenAsync(geselecteerd.Id);
+                    await LaadBestellingenAsync();
+                    MessageBox.Show("Bestelling succesvol verwijderd.", "Succes", 
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Fout bij verwijderen: {ex.Message}", "Fout", 
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+        else
+        {
+            MessageBox.Show("Selecteer eerst een bestelling.", "Waarschuwing", 
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    private void TerugButton_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+}

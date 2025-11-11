@@ -1,0 +1,109 @@
+﻿using System.Windows;
+using System.Windows.Controls;
+using MGCleaning.Desktop.Services;
+using MGCleaning.Models;
+
+namespace MGCleaning.Desktop.Views;
+
+public partial class ProductEditDialog : Window
+{
+    private readonly ProductService _productService;
+    private readonly Product? _product;
+
+    public ProductEditDialog(ProductService productService, Product? product = null)
+    {
+        InitializeComponent();
+        _productService = productService;
+        _product = product;
+
+        if (_product != null)
+        {
+            NaamTextBox.Text = _product.Naam;
+            TypeComboBox.Text = _product.Type;
+            VoorraadTextBox.Text = _product.Voorraad.ToString();
+            // Display waarde * 100 voor UI
+            HoeveelheidPer100M2TextBox.Text = (_product.HoeveelheidPerM2 * 100).ToString();
+            Title = "Product Wijzigen";
+        }
+        else
+        {
+            Title = "Nieuw Product";
+            TypeComboBox.SelectedIndex = 0;
+        }
+    }
+
+    private async void OpslaanButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(NaamTextBox.Text))
+            {
+                MessageBox.Show("Naam is verplicht.", "Validatie", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(TypeComboBox.Text))
+            {
+                MessageBox.Show("Type is verplicht.", "Validatie", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!int.TryParse(VoorraadTextBox.Text, out var voorraad) || voorraad < 0)
+            {
+                MessageBox.Show("Voer een geldige voorraad in.", "Validatie", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!decimal.TryParse(HoeveelheidPer100M2TextBox.Text, out var per100M2) || per100M2 < 0)
+            {
+                MessageBox.Show("Voer een geldige hoeveelheid per 100m2 in.", "Validatie", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Converteer UI waarde (per 100m2) terug naar database waarde (per m2)
+            var perM2 = per100M2 / 100;
+
+            if (_product != null)
+            {
+                // Wijzigen
+                _product.Naam = NaamTextBox.Text;
+                _product.Type = TypeComboBox.Text;
+                _product.Voorraad = voorraad;
+                _product.HoeveelheidPerM2 = perM2;
+                _product.HoeveelheidPerToilet = 0; // Niet meer gebruikt
+                await _productService.BijwerkenAsync(_product);
+            }
+            else
+            {
+                // Toevoegen
+                var nieuwProduct = new Product
+                {
+                    Naam = NaamTextBox.Text,
+                    Type = TypeComboBox.Text,
+                    Voorraad = voorraad,
+                    HoeveelheidPerM2 = perM2,
+                    HoeveelheidPerToilet = 0 // Niet meer gebruikt
+                };
+                await _productService.ToevoegenAsync(nieuwProduct);
+            }
+
+            DialogResult = true;
+            Close();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Fout bij opslaan: {ex.Message}", "Fout", 
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void AnnulerenButton_Click(object sender, RoutedEventArgs e)
+    {
+        DialogResult = false;
+        Close();
+    }
+}

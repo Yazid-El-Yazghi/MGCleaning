@@ -1,0 +1,112 @@
+﻿using System.Windows;
+using MGCleaning.Desktop.Services;
+using MGCleaning.Models;
+
+namespace MGCleaning.Desktop.Views;
+
+public partial class ProductenWindow : Window
+{
+    private readonly ProductService _productService;
+    private readonly AuthService _authService;
+
+    public ProductenWindow(ProductService productService, AuthService authService)
+    {
+        InitializeComponent();
+        _productService = productService;
+        _authService = authService;
+        Loaded += ProductenWindow_Loaded;
+    }
+
+    private async void ProductenWindow_Loaded(object sender, RoutedEventArgs e)
+    {
+        await ConfigureUIBasedOnRole();
+        await LaadProductenAsync();
+    }
+
+    private async Task ConfigureUIBasedOnRole()
+    {
+        if (_authService.HuidigeGebruiker == null)
+            return;
+
+        var rollen = await _authService.GetRollenAsync(_authService.HuidigeGebruiker);
+        var isAdminOfManager = rollen.Contains("Admin") || rollen.Contains("Manager");
+
+        // Toon of verberg knoppen op basis van rol
+        ButtonPanel.Visibility = isAdminOfManager ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private async Task LaadProductenAsync()
+    {
+        try
+        {
+            var producten = await _productService.GetAlleProductenAsync();
+            ProductenDataGrid.ItemsSource = producten;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Fout bij laden producten: {ex.Message}", "Fout", 
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void ToevoegenButton_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new ProductEditDialog(_productService);
+        if (dialog.ShowDialog() == true)
+        {
+            _ = LaadProductenAsync();
+        }
+    }
+
+    private void WijzigenButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (ProductenDataGrid.SelectedItem is Product geselecteerd)
+        {
+            var dialog = new ProductEditDialog(_productService, geselecteerd);
+            if (dialog.ShowDialog() == true)
+            {
+                _ = LaadProductenAsync();
+            }
+        }
+        else
+        {
+            MessageBox.Show("Selecteer eerst een product.", "Waarschuwing", 
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    private async void VerwijderenButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (ProductenDataGrid.SelectedItem is Product geselecteerd)
+        {
+            var result = MessageBox.Show($"Weet u zeker dat u '{geselecteerd.Naam}' wilt verwijderen?", 
+                "Bevestiging", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    await _productService.VerwijderenAsync(geselecteerd.Id);
+                    await LaadProductenAsync();
+                    MessageBox.Show("Product succesvol verwijderd.", "Succes", 
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Fout bij verwijderen: {ex.Message}", "Fout", 
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+        else
+        {
+            MessageBox.Show("Selecteer eerst een product.", "Waarschuwing", 
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    private void TerugButton_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+}
