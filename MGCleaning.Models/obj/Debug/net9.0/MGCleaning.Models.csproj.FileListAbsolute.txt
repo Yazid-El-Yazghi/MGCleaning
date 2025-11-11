@@ -1,0 +1,14 @@
+C:\Users\yazid\Desktop\Project\MG-cleaning\MGCleaning.Models\bin\Debug\net9.0\MGCleaning.Models.deps.json
+C:\Users\yazid\Desktop\Project\MG-cleaning\MGCleaning.Models\bin\Debug\net9.0\MGCleaning.Models.runtimeconfig.json
+C:\Users\yazid\Desktop\Project\MG-cleaning\MGCleaning.Models\bin\Debug\net9.0\MGCleaning.Models.dll
+C:\Users\yazid\Desktop\Project\MG-cleaning\MGCleaning.Models\bin\Debug\net9.0\MGCleaning.Models.pdb
+C:\Users\yazid\Desktop\Project\MG-cleaning\MGCleaning.Models\obj\Debug\net9.0\MGCleaning.Models.csproj.AssemblyReference.cache
+C:\Users\yazid\Desktop\Project\MG-cleaning\MGCleaning.Models\obj\Debug\net9.0\MGCleaning.Models.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\yazid\Desktop\Project\MG-cleaning\MGCleaning.Models\obj\Debug\net9.0\MGCleaning.Models.AssemblyInfoInputs.cache
+C:\Users\yazid\Desktop\Project\MG-cleaning\MGCleaning.Models\obj\Debug\net9.0\MGCleaning.Models.AssemblyInfo.cs
+C:\Users\yazid\Desktop\Project\MG-cleaning\MGCleaning.Models\obj\Debug\net9.0\MGCleaning.Models.csproj.CoreCompileInputs.cache
+C:\Users\yazid\Desktop\Project\MG-cleaning\MGCleaning.Models\obj\Debug\net9.0\MGCleaning.Models.dll
+C:\Users\yazid\Desktop\Project\MG-cleaning\MGCleaning.Models\obj\Debug\net9.0\refint\MGCleaning.Models.dll
+C:\Users\yazid\Desktop\Project\MG-cleaning\MGCleaning.Models\obj\Debug\net9.0\MGCleaning.Models.pdb
+C:\Users\yazid\Desktop\Project\MG-cleaning\MGCleaning.Models\obj\Debug\net9.0\MGCleaning.Models.genruntimeconfig.cache
+C:\Users\yazid\Desktop\Project\MG-cleaning\MGCleaning.Models\obj\Debug\net9.0\ref\MGCleaning.Models.dll
